@@ -73,4 +73,33 @@ describe 'rjil::haproxy::openstack' do
 
   end
 
+  describe 'with default parameters' do
+    it 'should create all ha proxy services' do
+      ['horizon', 'horizon-https', 'radosgw', 'novncproxy', 'keystone', 'keystone-admin', 'neutron', 'glance, glance-registry', 'cinder', 'nova', 'metadata', 'nova-ec2'].each do |x|
+        should contain_rjil__haproxy_service(x)
+      end
+    end
+  end
+  describe 'when services are disabled' do
+    before do
+      params.merge!(
+        'nova_ec2_enabled'  => false,
+        'metadata_enabled'  => false,
+        'nova_enabled'      => false,
+        'cinder_enabled'    => false,
+        'glance_enabled'    => false,
+        'neutron_enabled'   => false,
+        'keystone_enabled'  => false,
+        'novncproxy_enable' => false,
+        'radosgw_enabled'   => false,
+        'horizon_enabled'   => false,
+      )
+    end
+    it 'should create all ha proxy services' do
+      ['horizon', 'horizon-https', 'radosgw', 'novncproxy', 'keystone', 'keystone-admin', 'neutron', 'glance, glance-registry', 'cinder', 'nova', 'metadata', 'nova-ec2'].each do |x|
+        should_not contain_rjil__haproxy_service(x)
+      end
+    end
+  end
+
 end

@@ -1,0 +1,9 @@
+rjil::haproxy::openstack::nova_ec2_enabled: false
+rjil::haproxy::openstack::metadata_enabled:  false
+rjil::haproxy::openstack::nova_enabled:  false
+rjil::haproxy::openstack::cinder_enabled:  false
+rjil::haproxy::openstack::glance_enabled:  false
+rjil::haproxy::openstack::neutron_enabled:  false
+rjil::haproxy::openstack::novncproxy_enable:  false
+rjil::haproxy::openstack::radosgw_enabled:  false
+rjil::haproxy::openstack::horizon_enabled:  false
