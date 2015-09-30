@@ -207,3 +207,11 @@ mod 'community/archive',
 mod 'pdxcat/collectd',
   :git => "#{base_url}/pdxcat/puppet-module-collectd",
   :ref => 'v3.2.0'
+
+mod 'gdhbashton/consul_template',
+  :git => "#{base_url}/gdhbashton/puppet-consul_template",
+  :ref => 'd76c1f62d744ab1c9b12c8fc6f17a5576e1da49b'
+
+mod 'bodepd/haproxy_consul',
+  :git => "#{base_url}/bodepd/puppet-haproxy_consul",
+  :ref => 'dd354f62fe6c513dc5595949f6af04f46b1bdab1'

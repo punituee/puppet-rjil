@@ -109,8 +109,6 @@ class rjil::keystone(
     }
   }
 
-  Class['rjil::keystone'] -> Rjil::Service_blocker<| title == 'keystone-admin' |>
-
   $keystone_logs = ['keystone-manage',
                     'keystone-all',
                     ]
