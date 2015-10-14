@@ -45,23 +45,23 @@ define rjil::haproxy_service(
       $balancer_ports_orig = $balancer_ports
     }
 
-    ::haproxy::listen { $name:
-      ipaddress        => $vip,
-      ports            => $listen_ports_orig,
-      mode             => $listen_mode,
-      collect_exported => false,
-      options          => $listen_options,
-      bind_options     => $bind_options
-    }
+    #::haproxy::listen { $name:
+    #  ipaddress        => $vip,
+    #  ports            => $listen_ports_orig,
+    #  mode             => $listen_mode,
+    #  collect_exported => false,
+    #  options          => $listen_options,
+    #  bind_options     => $bind_options
+    #}
 
-    ::haproxy::balancermember { $name:
-      listening_service => $name,
-      ports             => $balancer_ports_orig,
-      server_names      => $cluster_addresses,
-      ipaddresses       => $cluster_addresses,
-      options           => $balancer_options,
-      define_cookies    => $balancer_cookie
-    }
+    #::haproxy::balancermember { $name:
+    #  listening_service => $name,
+    #  ports             => $balancer_ports_orig,
+    #  server_names      => $cluster_addresses,
+    #  ipaddresses       => $cluster_addresses,
+    #  options           => $balancer_options,
+    #  define_cookies    => $balancer_cookie
+    #}
 
     if (is_array($listen_ports)) {
       if ($listen_ports == []) {

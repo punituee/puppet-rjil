@@ -5,94 +5,56 @@
 #
 #
 class rjil::haproxy (
-  $consul_service_tags     = [],
-  $logfile                 = '/var/log/haproxy.log',
-  $log_level               = '127.0.0.1 local0 notice',
-  $default_log_level       = 'global',
-  $default_mode            = 'http',
-  $default_options         = ['httplog', 'dontlognull', 'redispatch'],
-  $default_retries         = 3,
-  $default_maxconn         = 5000,
-  $default_timeout_connect = 20000,
-  $default_timeout_client  = 20000,
-  $default_timeout_server  = 20000,
-  $errorfile               = [
-                              '400 /etc/haproxy/errors/400.http',
-                              '403 /etc/haproxy/errors/403.http',
-                              '408 /etc/haproxy/errors/408.http',
-                              '500 /etc/haproxy/errors/500.http',
-                              '502 /etc/haproxy/errors/502.http',
-                              '503 /etc/haproxy/errors/503.http',
-                              '504 /etc/haproxy/errors/504.http'
-                            ],
-  $global_maxconn          = 5000,
-  $stats                   = 'socket /var/run/haproxy mode 777',
+  $radosgw_port          = '80',
+  $horizon_port          = '80',
+  $horizon_https_port    = '443',
+  $novncproxy_port       = '6080',
+  $keystone_public_port  = '5000',
+  $keystone_admin_port   = '35357',
+  $glance_port           = '9292',
+  $glance_registry_port  = '9191',
+  $cinder_port           = '8776',
+  $nova_port             = '8774',
+  $neutron_port          = '9696',
+  $metadata_port         = '8775',
+  $nova_ec2_port         = '8773',
+  $nova_ec2_enabled      = true,
+  $metadata_enabled      = true,
+  $nova_enabled          = true,
+  $cinder_enabled        = true,
+  $glance_enabled        = true,
+  $neutron_enabled       = true,
+  $keystone_enabled      = true,
+  $novncproxy_enable     = true,
+  $radosgw_enabled       = true,
+  $horizon_enabled       = true,
 ) {
 
-  rjil::test { 'haproxy.sh': }
-
-  $haproxy_defaults = {
-    'log'        => $default_log_level,
-    'mode'       => $default_mode,
-    'option'     => $default_options,
-    'retries'    => $default_retries,
-    'maxconn'    => $default_maxconn,
-    'timeout'    => [ "connect ${default_timeout_connect}",
-                      "client ${default_timeout_client}",
-                      "server ${default_timeout_server}" ],
-    'errorfile'  => $errorfile,
-  }
-
-  $haproxy_globals = {
-    'log'       => $log_level,
-    'maxconn'   => $global_maxconn,
-    'user'      => 'haproxy',
-    'group'     => 'haproxy',
-    'daemon'    => '',
-    'quiet'     => '',
-    'stats'     => $stats,
-  }
-
-  class { '::haproxy':
-    global_options   => $haproxy_globals,
-    defaults_options => $haproxy_defaults
-  }
+  # TODO - add all services for openstack here, and get rid of the
+  # haproxy/openstack and haproxy_service classes
 
   rjil::jiocloud::logrotate { 'haproxy': }
-#
-# commented out configuration related to keepalive d
-# for multiple lbs
-#
-
-  haproxy::listen { 'lb-stats':
-    ipaddress => '0.0.0.0',
-    ports     => '8094',
-    mode      => 'http',
-    options   => {
-      'option'  => [
-        'httplog',
-      ],
-      'stats' => ['enable', 'uri /lb-stats'],
-    },
-  }
 
   package { ['nagios-plugins-contrib', 'libwww-perl', 'libnagios-plugin-perl']:
     ensure => 'present'
   }
 
-  rjil::jiocloud::consul::service { "haproxy":
-    port          => 8094,
-    check_command => "/usr/lib/nagios/plugins/check_haproxy -u 'http://0.0.0.0:8094/lb-stats;csv'",
-    tags          => $consul_service_tags
+  # add all openstack components like this
+  if $keystone_enabled {
+    $keystone_backends = {
+      'real.keystone' => {'ports' => $keystone_public_port},
+      'real.keystone-admin' => {'ports' => $keystone_admin_port}
+    }
+  } else {
+    $keystone_backends = {}
   }
 
-  # Openstack services depend on being able to access db and mq, so make
-  # sure our VIPs and LB are active before we deal with them.
-  Haproxy::Listen<||> -> Anchor <| title == 'mysql::server::start' |>
-  Haproxy::Listen<||> -> Anchor <| title == 'rabbitmq::begin' |>
-  Haproxy::Balancermember<||> -> Anchor <| title == 'mysql::server::start' |>
-  Haproxy::Balancermember<||> -> Anchor <| title == 'rabbitmq::begin' |>
-  Service<| title == 'haproxy' |> -> Anchor <| title == 'rabbitmq::begin' |>
-  Service<| title == 'haproxy' |> -> Anchor <| title == 'mysql::server::start' |>
+  $backends = merge({}, $keystone_backends)
+
+  class { 'haproxy_consul':
+    backends         => $backends,
+    consul_wait      => '5s:30s',
+    consul_log_level => 'debug',
+  }
 
 }

@@ -27,6 +27,8 @@ class rjil::keystone(
     $address = $public_address
   }
 
+  include rjil::test::keystone
+
   Rjil::Test::Check {
     ssl     => $ssl,
     address => $address,
@@ -106,8 +108,6 @@ class rjil::keystone(
       'cache/backend_argument': value => $cache_backend_argument;
     }
   }
-
-  Class['rjil::keystone'] -> Rjil::Service_blocker<| title == 'keystone-admin' |>
 
   $keystone_logs = ['keystone-manage',
                     'keystone-all',
