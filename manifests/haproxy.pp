@@ -50,11 +50,11 @@ class rjil::haproxy (
   }
 
   if $nova_ec2_enabled {
-    $nova_ec2_enabled = {
+    $nova_ec2_backends = {
       'real.nova-ec2' => {'ports' => $nova_ec2_port}
     }
   } else {
-    $nova_ec2_backend = {}
+    $nova_ec2_backends = {}
   }
 
   if $metadata_enabled {
@@ -114,8 +114,10 @@ class rjil::haproxy (
     $radosgw_backends = {}
   }
 
-  $backends = merge({}, $keystone_backends)
-
+  $backends = merge({}, $keystone_backends, $radosgw_backends,
+    $nova_vncproxy_backends, $neutron_backends, $glance_backends,
+    $cinder_backends, $nova_backends, $nova_ec2_backends,
+    $metadata_backends)
   class { 'haproxy_consul':
     backends         => $backends,
     consul_wait      => '5s:30s',
