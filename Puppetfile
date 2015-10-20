@@ -214,4 +214,4 @@ mod 'gdhbashton/consul_template',
 
 mod 'punituee/haproxy_consul',
   :git => "#{base_url}/punituee/puppet-haproxy_consul",
-  :ref => 'dd354f62fe6c513dc5595949f6af04f46b1bdab1'
+  :ref => 'origin/master'
