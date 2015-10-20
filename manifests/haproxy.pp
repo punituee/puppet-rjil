@@ -25,7 +25,7 @@ class rjil::haproxy (
   $glance_enabled        = true,
   $neutron_enabled       = true,
   $keystone_enabled      = true,
-  $novncproxy_enable     = true,
+  $nova_vncproxy_enable  = true,
   $radosgw_enabled       = true,
   $horizon_enabled       = true,
 ) {
@@ -47,6 +47,71 @@ class rjil::haproxy (
     }
   } else {
     $keystone_backends = {}
+  }
+
+  if $nova_ec2_enabled {
+    $nova_ec2_enabled = {
+      'real.nova-ec2' => {'ports' => $nova_ec2_port}
+    }
+  } else {
+    $nova_ec2_backend = {}
+  }
+
+  if $metadata_enabled {
+    $metadata_backends = {
+      'real.metadata' => {'ports' => $metadata_port},
+    }
+  } else {
+    $metadata_backends = {}
+  }
+
+  if $nova_enabled {
+    $nova_backends = {
+      'real.nova' => {'ports' => $nova_port},
+    }
+  } else {
+    $nova_backends = {}
+  }
+
+  if $cinder_enabled {
+    $cinder_backends = {
+      'real.cinder' => {'ports' => $cinder_port},
+    }
+  } else {
+    $cinder_backends = {}
+  }
+
+  if $glance_enabled {
+    $glance_backends = {
+      'real.glance' => {'ports' => $glance_port},
+      'real.glance-registry' => {'ports' => $glance_registry_port},
+    }
+  } else {
+    $glance_backends = {}
+  }
+
+  if $neutron_enabled {
+    $neutron_backends = {
+      'real.neutron' => {'ports' => $neutron_port},
+    }
+  } else {
+    $neutron_backends = {}
+  }
+
+  if $nova_vncproxy_enabled {
+    $nova_vncproxy_backends = {
+      'real.nova_vncproxy' => {'ports' => $nova_vncproxy_port},
+    }
+  } else {
+    $nova_vncproxy_backends = {}
+  }
+
+  if $radosgw_enabled {
+    $radosgw_backends = {
+      'real.radosgw' => {'ports' => $radosgw_port},
+    }
+  } else {
+    $radosgw_backends = {}
   }
 
   $backends = merge({}, $keystone_backends)
