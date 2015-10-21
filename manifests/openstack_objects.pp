@@ -77,12 +77,6 @@ class rjil::openstack_objects(
     ensure_resource('rjil::service_blocker', $glance_service_name, {})
     Runtime_fail['keystone_endpoint_not_resolvable'] -> Rjil::Service_blocker[$glance_service_name]
     Rjil::Service_blocker[$glance_service_name] -> Glance_image<||>
-    include ::archive
-    archive { '/usr/lib/jiocloud/cirros-0.3.3-x86_64-disk.img':
-      source   => 'http://download.cirros-cloud.net/0.3.3/cirros-0.3.3-x86_64-disk.img',
-      before   => Glance_image['cirros-0.3.3'],
-    }
-    # create users, tenants, roles, default networks
   }
   if $neutron_enabled {
     ensure_resource('rjil::service_blocker', $neutron_service_name, {})
