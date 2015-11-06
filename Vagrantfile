@@ -108,7 +108,7 @@ Vagrant.configure("2") do |config|
 
  
       net_prefix = ENV['NET_PREFIX'] || "192.168.100.0"
-      config.vm.network "private_network", :type => :dhcp, :ip => net_prefix, :netmask => "255.255.255.0", :name => 'vboxnet1', :adapter => 2
+      config.vm.network "private_network", :type => :dhcp, :ip => net_prefix, :netmask => "255.255.255.0", :adapter => 2
     end
   end
 end
